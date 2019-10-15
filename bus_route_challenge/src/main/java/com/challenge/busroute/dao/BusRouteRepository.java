@@ -1,10 +1,11 @@
 package com.challenge.busroute.dao;
 
+import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.collections.api.list.primitive.IntList;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
-import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -21,17 +22,18 @@ import java.util.Scanner;
  *    It help us to detect whether departure stationId is preceding arrival stationId or not.
  *
  * I also perform sorting for routes collections to achieve O(n) complexity instead of O(n2) during intersection calculation.
- * Both maps are built on top of the eclipse collections library to avoid primitive autoboxing by standard java data structures.
+ * Both maps are built on top of the fastutil library to avoid primitive autoboxing by standard java data structures.
  * It allows us to save a lot of heap space.
  *
  * For 100_000 routes x 1000 stations data size(file size 660Mb) application consumes 1.2Gb of heap size and starts for around 1 minute.
+ * Response time is below 30 ms for subsequent local requests
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class BusRouteRepository implements SmartInitializingSingleton {
-	private IntObjectHashMap<IntArrayList> stationToRoutesMap = new IntObjectHashMap<>();
-	private IntObjectHashMap<IntList> routeToStationsMap = new IntObjectHashMap<>();
+	private Int2ReferenceMap<IntArrayList> stationToRoutesMap = new Int2ReferenceOpenHashMap<>();
+	private Int2ReferenceMap<IntList> routeToStationsMap = new Int2ReferenceOpenHashMap<>();
 	private final ApplicationArguments args;
 
 	@Override
@@ -59,26 +61,20 @@ public class BusRouteRepository implements SmartInitializingSingleton {
 				routeId = Integer.parseInt(data[0]);
 				for (int j = 1; j < data.length; j++) {
 					stationId = Integer.parseInt(data[j]);
-					IntArrayList routesList = stationToRoutesMap.get(stationId);
-					if (routesList != null) {
-						routesList.add(routeId);
-					} else {
-						routesList = new IntArrayList();
-						routesList.add(routeId);
-						stationToRoutesMap.put(stationId, routesList);
-					}
+					stationToRoutesMap.computeIfAbsent(stationId, station -> new IntArrayList()).add(routeId);
 					route.add(stationId);
 				}
 				routeToStationsMap.put(routeId, route);
 			}
-			stationToRoutesMap.values().forEach(IntArrayList::sortThis);
+			stationToRoutesMap.values().forEach(x -> x.sort(null));
 		} catch (IOException ioe) {
 			log.error("Could not read bus route data from the file: {}", file_path);
 		}
 	}
 
-	public IntList getRoutesByStationId(int stationId) {
-		return stationToRoutesMap.get(stationId);
+	public int[] getRoutesByStationId(int stationId) {
+		IntArrayList routes = stationToRoutesMap.get(stationId);
+		return routes == null ? null : routes.elements();
 	}
 
 	public IntList getStationsByRouteId(int routeId) {

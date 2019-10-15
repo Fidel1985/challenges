@@ -2,10 +2,9 @@ package com.challenge.busroute.service;
 
 import com.challenge.busroute.dao.BusRouteRepository;
 import com.challenge.busroute.dto.BusRouteDto;
+import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.collections.api.iterator.IntIterator;
-import org.eclipse.collections.api.list.primitive.IntList;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -23,23 +22,25 @@ public class BusRouteService {
 	}
 
 	private boolean isDirect(int departureStationId, int arrivalStationId) {
-		IntList departureStationRoutes = busRouteRepository.getRoutesByStationId(departureStationId);
+		int[] departureStationRoutes = busRouteRepository.getRoutesByStationId(departureStationId);
 		if (departureStationRoutes == null) {
 			return false;
 		}
-		IntList arrivalStationRoutes = busRouteRepository.getRoutesByStationId(arrivalStationId);
+		log.info("departureStationRoutes :{}", departureStationRoutes);
+		int[] arrivalStationRoutes = busRouteRepository.getRoutesByStationId(arrivalStationId);
 		if (arrivalStationRoutes == null) {
 			return false;
 		}
+		log.info("arrivalStationRoutes :{}", arrivalStationRoutes);
 		int i = 0;
 		int j = 0;
-		while (i < departureStationRoutes.size() && j < arrivalStationRoutes.size()) {
-			if (departureStationRoutes.get(i) > arrivalStationRoutes.get(j))
+		while (i < departureStationRoutes.length && j < arrivalStationRoutes.length) {
+			if (departureStationRoutes[i] > arrivalStationRoutes[j])
 				j++;
-			else if (departureStationRoutes.get(i) < arrivalStationRoutes.get(j))
+			else if (departureStationRoutes[i] < arrivalStationRoutes[j])
 				i++;
 			else {
-				if (isDirectionRight(departureStationRoutes.get(i), departureStationId, arrivalStationId)) {
+				if (isDirectionRight(departureStationRoutes[i], departureStationId, arrivalStationId)) {
 					return true;
 				}
 				i++;
@@ -51,10 +52,7 @@ public class BusRouteService {
 
 	private boolean isDirectionRight(int routeId, int departureStationId, int arrivalStationId) {
 		IntList route = busRouteRepository.getStationsByRouteId(routeId);
-		IntIterator routeIterator = route.intIterator();
-		int stationId;
-		while (routeIterator.hasNext()) {
-			stationId = routeIterator.next();
+		for (int stationId : route) {
 			if (stationId == arrivalStationId) {
 				return false;
 			}

@@ -2,14 +2,17 @@ package com.challenge.busroute.service;
 
 import com.challenge.busroute.dao.BusRouteRepository;
 import com.challenge.busroute.dto.BusRouteDto;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -24,9 +27,9 @@ public class BusRouteServiceTests {
 	private static final int DEPARTURE_STATION_ID = 738;
 	private static final int ARRIVAL_STATION_ID = 923;
 	private static final int COMMON_ROUTE_ID = 4;
-	private static final IntArrayList departureRoutes = IntArrayList.newListWith(0, 3, 4, 9);
-	private static final IntArrayList arrivalRoutes = IntArrayList.newListWith(1, 2, 4, 7);
-	private static final IntArrayList commonRoute = IntArrayList.newListWith(435, 999, 874, 738, 555, 923);
+	private static final int[] departureRoutes = new int[] {0, 3, 4, 9};
+	private static final int[] arrivalRoutes = new int[] {1, 2, 4, 7};
+	private static final IntArrayList commonRoute = new IntArrayList(Arrays.asList(435, 999, 874, 738, 555, 923));
 
 	@Test
 	public void testEmptyDepartureRoutesDirectIsFalse() {

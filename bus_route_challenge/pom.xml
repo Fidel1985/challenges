@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <eclipse-collections.version>10.0.0</eclipse-collections.version>
+        <fastutil.version>8.3.0</fastutil.version>
     </properties>
 
     <dependencies>
@@ -38,15 +38,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.collections</groupId>
-            <artifactId>eclipse-collections-api</artifactId>
-            <version>${eclipse-collections.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.collections</groupId>
-            <artifactId>eclipse-collections</artifactId>
-            <version>${eclipse-collections.version}</version>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
+            <version>${fastutil.version}</version>
         </dependency>
     </dependencies>
 
