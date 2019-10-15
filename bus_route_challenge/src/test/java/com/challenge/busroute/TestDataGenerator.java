@@ -15,6 +15,7 @@ public class TestDataGenerator {
             pw = new PrintWriter(new File("VolumeData"));
 			int routeCount = 100_000;
 			pw.write(routeCount + "\n");
+			//inverted routes to test sorting
             for (int i = 100_000; i > 0; i--) {
             //for (int i = 0; i < routeCount; i++) {
                 pw.write(buildRow(i));

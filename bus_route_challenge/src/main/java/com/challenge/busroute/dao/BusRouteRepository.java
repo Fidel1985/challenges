@@ -21,7 +21,7 @@ import java.util.Scanner;
  *    It help us to detect whether departure stationId is preceding arrival stationId or not.
  *
  * I also perform sorting for routes collections to achieve O(n) complexity instead of O(n2) during intersection calculation.
- * Both maps are supplied buy eclipse collections library to avoid primitive autoboxing by standard java data structures.
+ * Both maps are built on top of the eclipse collections library to avoid primitive autoboxing by standard java data structures.
  * It allows us to save a lot of heap space.
  *
  * For 100_000 routes x 1000 stations data size(file size 660Mb) application consumes 1.2Gb of heap size and starts for around 1 minute.
