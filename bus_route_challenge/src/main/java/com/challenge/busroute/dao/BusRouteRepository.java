@@ -55,9 +55,9 @@ public class BusRouteRepository implements SmartInitializingSingleton {
 			int routeId;
 			int stationId;
 			for (int i = 0; i < numberOfRoutes; i++) {
-				IntArrayList route = new IntArrayList();
 				String[] data = scanner.nextLine().split(" ");
 				routeId = Integer.parseInt(data[0]);
+				IntArrayList route = new IntArrayList(data.length - 1);
 				for (int j = 1; j < data.length; j++) {
 					stationId = Integer.parseInt(data[j]);
 					IntArrayList routesList = stationToRoutesMap.get(stationId);
