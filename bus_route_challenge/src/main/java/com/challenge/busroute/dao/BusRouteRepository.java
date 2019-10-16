@@ -20,18 +20,19 @@ import java.util.Scanner;
  * 2) routeToStationsMap also contains int key, IntArrayList value. This map just reproduce input file data structure.
  *    It help us to detect whether departure stationId is preceding arrival stationId or not.
  *
- * I also perform sorting for routes collections to achieve O(n) complexity instead of O(n2) during intersection calculation.
- * Both maps are built on top of the eclipse collections library to avoid primitive autoboxing by standard java data structures.
+ * Collection of routes are sorted to achieve O(n) complexity instead of O(n2) during intersection calculation.
+ * Both maps are built on top of the eclipse collections library to avoid autoboxing of primitives by standard java data structures.
  * It allows us to save a lot of heap space.
  *
  * For 100_000 routes x 1000 stations data size(file size 660Mb) application consumes 1.2Gb of heap size and starts for around 1 minute.
+ * Response time is below 30 ms for subsequent local requests
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class BusRouteRepository implements SmartInitializingSingleton {
 	private IntObjectHashMap<IntArrayList> stationToRoutesMap = new IntObjectHashMap<>();
-	private IntObjectHashMap<IntList> routeToStationsMap = new IntObjectHashMap<>();
+	private IntObjectHashMap<IntArrayList> routeToStationsMap = new IntObjectHashMap<>();
 	private final ApplicationArguments args;
 
 	@Override
@@ -60,13 +61,11 @@ public class BusRouteRepository implements SmartInitializingSingleton {
 				for (int j = 1; j < data.length; j++) {
 					stationId = Integer.parseInt(data[j]);
 					IntArrayList routesList = stationToRoutesMap.get(stationId);
-					if (routesList != null) {
-						routesList.add(routeId);
-					} else {
+					if (routesList == null) {
 						routesList = new IntArrayList();
-						routesList.add(routeId);
 						stationToRoutesMap.put(stationId, routesList);
 					}
+					routesList.add(routeId);
 					route.add(stationId);
 				}
 				routeToStationsMap.put(routeId, route);
